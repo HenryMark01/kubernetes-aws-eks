@@ -1,0 +1,38 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: my-cluster-henry
+  region: us-east-1
+  version: "1.29"
+
+vpc:
+  id: "vpc-05cea846a9aba6072" 
+  subnets:
+    public:
+      us-east-1a:
+        id: "subnet-08b685a484f9edf9e"  
+      us-east-1f:
+        id: "subnet-0c2287171b5cb9eae"  
+nodeGroups:
+  - name: henry-nodes
+    instanceType: t2.medium
+    desiredCapacity: 2
+    minSize: 2
+    maxSize: 2
+    ssh:
+      allow: true
+      publicKeyName: kmay
+    iam:
+      withAddonPolicies:
+        autoScaler: true
+        efs: true
+        albIngress: true
+
+iam:
+  withOIDC: true
+
+
+# For quick Cluster creation
+# eksctl create cluster --name my-cluster --region us-east-1 --nodegroup-name my-nodes --node-type t2.medium --nodes 2 --nodes-min 2 --nodes-max 2 --with-oidc --ssh-access --ssh-public-key kmay --managed
+

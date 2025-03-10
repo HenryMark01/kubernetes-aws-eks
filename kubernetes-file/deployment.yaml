@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-deployment
+  namespace: my-namespace
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-app-container
+        image: nginx
+        ports:
+        - containerPort: 80
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: my-secret  # Secret containing DB_PASSWORD
+              key: DB_PASSWORD
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/my-app-config  # Mount the configMap file here
+          subPath: app-config.yaml
+        - name: efs-volume
+          mountPath: /mnt/efs  # Mount EFS volume here (customize the path as needed)
+      volumes:
+      - name: config-volume
+        configMap:
+          name: my-config  # Reference to ConfigMap 
+      - name: efs-volume
+        persistentVolumeClaim:
+          claimName: efs-pvc  # Reference to the PVC for EFS 

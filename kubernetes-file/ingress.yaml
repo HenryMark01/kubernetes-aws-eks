@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+  namespace: my-namespace
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"  # Enforces HTTPS
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: "nginx"  # Specify the Ingress controller's class
+spec:
+  rules:
+  - host: example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: my-service
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - example.com
+    secretName: ssl-secret
